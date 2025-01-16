@@ -11,7 +11,7 @@ const getUsers = async (req,res)=>{
 
 const addUsers = async (req,res)=>{
     if (!req.body){
-        res.json({text : "Merci d'ajouter les informations"})
+        res.status(401).json({text : "Merci d'ajouter les informations"})
     }
 
     const password = req.body.password
@@ -35,15 +35,39 @@ const login = async(req,res)=>{
     //console.log(verifyPassword)
     if (result && verifyPassword){
         //return res.json({message:'Access authorized'})
-        let token = await jwt.sign({userid :UserModel._id},process.env.TOKEN_KEY)
+        let token = await jwt.sign({userid :UserModel._id},process.env.TOKEN_KEY,{expiresIn : "900s"})
+        
+        let refreshToken = jwt.sign({userid : UserModel._id,}, process.env.REFRESH_TOKEN_KEYa, { expiresIn: '1h' });
+
+        // Assigning refresh token in http-only cookie 
+        res.cookie('jwt', refreshToken, {
+            httpOnly: true,
+            sameSite: 'None', secure: true,
+            maxAge: 24 * 60 * 60 * 1000
+        });
         return res.status(200).json({token})
     }
+
     //return res.json({message:'Access Denied'})
     return res.status(401).json({text: 'Login ou mot de passe incorrect'})
 }
 
 
+
+const logout = async(req,res)=>{
+    try{
+        req.user.token
+
+        await req.user.save()
+    }catch (e){
+
+    }
+}
+
+
+
 module.exports = {addUsers,
                   getUsers,
                   login,
+                  logout
                  }
