@@ -36,8 +36,8 @@ const login = async(req,res)=>{
     if (result && verifyPassword){
         //return res.json({message:'Access authorized'})
         let token = await jwt.sign({userid :UserModel._id},process.env.TOKEN_KEY,{expiresIn : "900s"})
-        
-        let refreshToken = jwt.sign({userid : UserModel._id,}, process.env.REFRESH_TOKEN_KEYa, { expiresIn: '1h' });
+      
+        let refreshToken = jwt.sign({userid : UserModel._id,}, process.env.REFRESH_TOKEN_KEYa , { expiresIn: '900s' });
 
         // Assigning refresh token in http-only cookie 
         res.cookie('jwt', refreshToken, {
@@ -52,6 +52,35 @@ const login = async(req,res)=>{
     return res.status(401).json({text: 'Login ou mot de passe incorrect'})
 }
 
+const refreshToken = async (req, res) => {
+    if (req.cookies?.jwt) {
+
+        // Destructuring refreshToken from cookie
+        const refreshToken = req.cookies.jwt;
+
+        // Verifying refresh token
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET,
+            (err, decoded) => {
+                if (err) {
+
+                    // Wrong Refesh Token
+                    return res.status(406).json({ message: 'Unauthorized' });
+                }
+                else {
+                    // Correct token we send a new access token
+                    const accessToken = jwt.sign({
+                        username: userCredentials.username,
+                        email: userCredentials.email
+                    }, process.env.ACCESS_TOKEN_SECRET, {
+                        expiresIn: '10m'
+                    });
+                    return res.json({ accessToken });
+                }
+            })
+    } else {
+        return res.status(406).json({ message: 'Unauthorized' });
+    }
+}
 
 
 const logout = async(req,res)=>{
