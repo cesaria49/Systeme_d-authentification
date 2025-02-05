@@ -5,7 +5,7 @@ const UserModel = require("../models/users")
 const test = async (req,res,next)=>{
     try{
         const token = req.headers.authorization.split(' ')[1]
-        req.token =  jwt.verify(token,process.env.TOKEN_KEY)
+        const decodeToken =  jwt.verify(token,process.env.TOKEN_KEY)
         await res.status(200).json({text :"Vous êtes bien authentifiés avec l'id : " })
         next()
     }
@@ -14,7 +14,7 @@ const test = async (req,res,next)=>{
     }
 }
 
-const protect = async(req,res,next)=>{
+/*const protect = async(req,res,next)=>{
     if(req.headers.authorizqtion && 
         req.headers.authorization.startWith('Bearer')   
     ){
@@ -36,7 +36,7 @@ const protect = async(req,res,next)=>{
     } catch (err) {
         return next(new ErrorResponse('Not authorized to access this route'))
     }
-}
+}*/
 
 module.exports = test
                 
