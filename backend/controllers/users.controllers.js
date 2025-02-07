@@ -12,8 +12,8 @@ const getUsers = async (req,res)=>{
 }
 
 const addUsers = async (req,res)=>{
-    if (!req.body){
-        return res.status(401).json({text : "Merci d'ajouter les informations"})
+    if (!req.body.firstname || !req.body.lastname  || !req.body.email|| !req.body.password){
+        return res.status(400).json({text : "Merci d'ajouter les informations"})
     }
 
     const password = req.body.password

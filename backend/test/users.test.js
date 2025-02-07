@@ -99,14 +99,28 @@ const serve = require('../server')
             password : 'toto'})
           .set({Accept : 'Application/json'})
           expect(response.status).toBe(201)
+          //expect(response.body).toMatchObject(sendData)
         })
-        /*it ('should return 401 if !req.body',async()=>{
+        it ('should return 400 if !req.body',async()=>{
           const response = await request (serve)
           .post('/users/add')
-          .send({})
-          .set({})
-          expect(response.status.toBe(401))
-        })*/
+          .send({firstname : 'toni',
+            lastname : 'Momo',
+            email : 'momo@gmail.com',})
+          .set({Accept :'Application/json'})
+          expect(response.status).toBe(400)
+        })
+        it ('should return 400 if !req.body',async ()=>{
+          const response = await request(serve)
+          .post('/users/add')
+          .send({lastname : 'assiba',
+                 email :'assiba@gmail.com'
+          })
+          .set({Accept :'Application/json'})
+          expect(response.status).toBe(400)
+          expect(response.body).toMatchObject({text:"Merci d'ajouter les informations"})
+
+        })
       })
       describe('POST users/getD',()=>{
         it('should return a status 200',async()=>{
@@ -117,6 +131,16 @@ const serve = require('../server')
 
         })
       })
+      /*describe('POST users/login',()=>{
+        it('should return a token if email and password are corrects',async()=>{
+          const response = await request (serve)
+          .post('/users/login')
+          .send({email : 'momo@gmail.com',
+            password : 'toto'})
+          .set({Accept : 'Application/json'})
+          expect(response.status).toBe(200)
+        })
+      })*/
     })
  
  
